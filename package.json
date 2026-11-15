@@ -9,7 +9,8 @@
     "lint": "eslint",
     "clips": "node --env-file=.env.local scripts/clips.mjs",
     "admin": "node --env-file=.env.local scripts/admin.mjs",
-    "seed:call": "node --env-file=.env.local scripts/seed-call.mjs"
+    "seed:call": "node --env-file=.env.local scripts/seed-call.mjs",
+    "seed:insights": "node --env-file=.env.local scripts/seed-insights.mjs"
   },
   "dependencies": {
     "@supabase/ssr": "^0.12.7",
