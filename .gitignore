@@ -40,3 +40,7 @@ yarn-error.log*
 # typescript
 *.tsbuildinfo
 next-env.d.ts
+
+# clip sources and encoded output (uploaded to Supabase, not git)
+/clips/
+_out/
