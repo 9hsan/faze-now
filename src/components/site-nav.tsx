@@ -1,0 +1,96 @@
+"use client";
+
+import Link from "next/link";
+import { usePathname } from "next/navigation";
+import { NAV, isActive } from "@/lib/nav";
+import { useAuth } from "@/components/auth-provider";
+
+function Wordmark() {
+  return (
+    <Link href="/" className="display text-2xl leading-none" aria-label="Faze Now home">
+      <span className="text-faze">FAZE</span> <span>NOW</span>
+    </Link>
+  );
+}
+
+export function PointsChip() {
+  const { ready, profile, isGuest } = useAuth();
+  return (
+    <Link
+      href="/me"
+      className="flex items-center gap-2 rounded-full border border-line bg-surface px-3 py-1.5 text-sm font-semibold"
+    >
+      <span className="h-2 w-2 rounded-full bg-gold" aria-hidden />
+      {ready && profile ? (
+        <span className="tabular-nums">{profile.points.toLocaleString()} pts</span>
+      ) : (
+        <span className="text-muted">···</span>
+      )}
+      {ready && isGuest ? (
+        <span className="hidden text-xs text-muted sm:inline">guest</span>
+      ) : null}
+    </Link>
+  );
+}
+
+export function SiteHeader() {
+  const pathname = usePathname();
+  return (
+    <header className="sticky top-0 z-40 border-b border-line bg-bg/90 backdrop-blur">
+      <div className="mx-auto flex h-14 max-w-6xl items-center justify-between gap-4 px-4">
+        <Wordmark />
+        <nav className="hidden items-center gap-1 md:flex" aria-label="Main">
+          {NAV.filter((n) => n.href !== "/").map((n) => (
+            <Link
+              key={n.href}
+              href={n.href}
+              className={`rounded-md px-3 py-2 text-sm font-semibold transition-colors ${
+                isActive(pathname, n.href) ? "text-fg" : "text-muted hover:text-fg"
+              }`}
+            >
+              {n.label}
+              {isActive(pathname, n.href) ? (
+                <span className="mt-0.5 block h-0.5 rounded bg-faze" aria-hidden />
+              ) : null}
+            </Link>
+          ))}
+        </nav>
+        <PointsChip />
+      </div>
+    </header>
+  );
+}
+
+/** Thumb-reachable tabs on phones (most demo traffic comes from QR scans). */
+export function BottomNav() {
+  const pathname = usePathname();
+  return (
+    <nav
+      className="fixed inset-x-0 bottom-0 z-40 border-t border-line bg-bg/95 backdrop-blur md:hidden"
+      style={{ paddingBottom: "env(safe-area-inset-bottom)" }}
+      aria-label="Main"
+    >
+      <ul className="mx-auto grid max-w-md grid-cols-5">
+        {NAV.map((n) => {
+          const active = isActive(pathname, n.href);
+          return (
+            <li key={n.href}>
+              <Link
+                href={n.href}
+                className={`flex h-14 flex-col items-center justify-center gap-1 text-[11px] font-semibold ${
+                  active ? "text-fg" : "text-muted"
+                }`}
+              >
+                <span
+                  className={`h-1 w-6 rounded-full ${active ? "bg-faze" : "bg-transparent"}`}
+                  aria-hidden
+                />
+                {n.short}
+              </Link>
+            </li>
+          );
+        })}
+      </ul>
+    </nav>
+  );
+}
