@@ -6,7 +6,9 @@
     "dev": "next dev",
     "build": "next build",
     "start": "next start",
-    "lint": "eslint"
+    "lint": "eslint",
+    "clips": "node --env-file=.env.local scripts/clips.mjs",
+    "admin": "node --env-file=.env.local scripts/admin.mjs"
   },
   "dependencies": {
     "@supabase/ssr": "^0.12.7",
