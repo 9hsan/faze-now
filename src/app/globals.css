@@ -41,6 +41,7 @@ body {
   color: var(--fg);
   font-family: var(--font-source), system-ui, sans-serif;
   -webkit-tap-highlight-color: transparent;
+  overflow-x: clip; /* full-bleed sections use 100vw */
 }
 
 /* Condensed all-caps display type, as in FaZe's own materials */
@@ -49,6 +50,56 @@ body {
   text-transform: uppercase;
   letter-spacing: 0.01em;
   line-height: 0.95;
+}
+
+/* Break out of the page container to the full viewport width */
+.bleed {
+  width: 100vw;
+  margin-left: calc(50% - 50vw);
+}
+
+/* Outlined display text for big background lettering */
+.outline-text {
+  color: transparent;
+  -webkit-text-stroke: 1.5px rgb(255 255 255 / 0.14);
+}
+
+@keyframes marquee {
+  from { transform: translateX(0); }
+  to { transform: translateX(-50%); }
+}
+.marquee {
+  animation: marquee 40s linear infinite;
+}
+.marquee:hover {
+  animation-play-state: paused;
+}
+
+@keyframes fill {
+  from { transform: scaleX(0); }
+  to { transform: scaleX(1); }
+}
+.progress-fill {
+  transform-origin: left;
+  animation: fill var(--slide-ms, 7000ms) linear forwards;
+}
+
+@keyframes fadeUp {
+  from { opacity: 0; transform: translateY(14px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+@keyframes kenburns {
+  from { transform: scale(1.04); }
+  to { transform: scale(1.12); }
+}
+.kenburns {
+  animation: kenburns 14s ease-out forwards;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .marquee, .kenburns { animation: none; }
+  .progress-fill { animation-duration: 1ms; }
 }
 
 .eyebrow {

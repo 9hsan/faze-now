@@ -35,12 +35,17 @@ export function fmtViews(n: number) {
 }
 
 function useCountdown(iso: string | undefined) {
-  const [now, setNow] = useState(() => Date.now());
+  // Clock starts in the browser only (prerendering can't read the current time)
+  const [now, setNow] = useState<number | null>(null);
   useEffect(() => {
+    const first = setTimeout(() => setNow(Date.now()), 0);
     const t = setInterval(() => setNow(Date.now()), 1000);
-    return () => clearInterval(t);
+    return () => {
+      clearTimeout(first);
+      clearInterval(t);
+    };
   }, []);
-  if (!iso) return null;
+  if (!iso || now === null) return null;
   const ms = new Date(iso).getTime() - now;
   if (ms <= 0) return "closed";
   const s = Math.floor(ms / 1000);
