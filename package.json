@@ -11,7 +11,8 @@
     "admin": "node --env-file=.env.local scripts/admin.mjs",
     "seed:call": "node --env-file=.env.local scripts/seed-call.mjs",
     "seed:insights": "node --env-file=.env.local scripts/seed-insights.mjs",
-    "themes": "node --env-file=.env.local scripts/themes.mjs"
+    "themes": "node --env-file=.env.local scripts/themes.mjs",
+    "seed:games": "node --env-file=.env.local scripts/seed-games.mjs"
   },
   "dependencies": {
     "@anthropic-ai/sdk": "^1.8.0",

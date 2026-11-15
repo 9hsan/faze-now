@@ -380,6 +380,75 @@ export type Database = {
         }
         Relationships: []
       }
+      faze_members: {
+        Row: {
+          era: string
+          founder: boolean
+          id: string
+          joined_year: number
+          known_for: string
+          name: string
+          sort: number
+        }
+        Insert: {
+          era: string
+          founder?: boolean
+          id: string
+          joined_year: number
+          known_for: string
+          name: string
+          sort?: number
+        }
+        Update: {
+          era?: string
+          founder?: boolean
+          id?: string
+          joined_year?: number
+          known_for?: string
+          name?: string
+          sort?: number
+        }
+        Relationships: []
+      }
+      member_guesses: {
+        Row: {
+          attempt: number
+          created_at: string
+          day: string
+          member_id: string
+          user_id: string
+        }
+        Insert: {
+          attempt: number
+          created_at?: string
+          day: string
+          member_id: string
+          user_id: string
+        }
+        Update: {
+          attempt?: number
+          created_at?: string
+          day?: string
+          member_id?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "member_guesses_member_id_fkey"
+            columns: ["member_id"]
+            isOneToOne: false
+            referencedRelation: "faze_members"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "member_guesses_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       notifications: {
         Row: {
           body: string
@@ -674,6 +743,87 @@ export type Database = {
         }
         Relationships: []
       }
+      redemptions: {
+        Row: {
+          code: string
+          cost: number
+          created_at: string
+          id: string
+          reward_id: string
+          status: string
+          user_id: string
+        }
+        Insert: {
+          code: string
+          cost: number
+          created_at?: string
+          id?: string
+          reward_id: string
+          status?: string
+          user_id: string
+        }
+        Update: {
+          code?: string
+          cost?: number
+          created_at?: string
+          id?: string
+          reward_id?: string
+          status?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "redemptions_reward_id_fkey"
+            columns: ["reward_id"]
+            isOneToOne: false
+            referencedRelation: "rewards"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "redemptions_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      rewards: {
+        Row: {
+          active: boolean
+          cost: number
+          created_at: string
+          description: string
+          id: string
+          kind: string
+          sort: number
+          stock: number | null
+          title: string
+        }
+        Insert: {
+          active?: boolean
+          cost: number
+          created_at?: string
+          description: string
+          id?: string
+          kind: string
+          sort?: number
+          stock?: number | null
+          title: string
+        }
+        Update: {
+          active?: boolean
+          cost?: number
+          created_at?: string
+          description?: string
+          id?: string
+          kind?: string
+          sort?: number
+          stock?: number | null
+          title?: string
+        }
+        Relationships: []
+      }
       themes: {
         Row: {
           created_at: string
@@ -708,6 +858,86 @@ export type Database = {
         Relationships: [
           {
             foreignKeyName: "themes_creator_id_fkey"
+            columns: ["creator_id"]
+            isOneToOne: false
+            referencedRelation: "creators"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      view_guesses: {
+        Row: {
+          created_at: string
+          guess: number
+          round_id: string
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          guess: number
+          round_id: string
+          user_id?: string
+        }
+        Update: {
+          created_at?: string
+          guess?: number
+          round_id?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "view_guesses_round_id_fkey"
+            columns: ["round_id"]
+            isOneToOne: false
+            referencedRelation: "view_rounds"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "view_guesses_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      view_rounds: {
+        Row: {
+          created_at: string
+          creator_id: string | null
+          final_views: number | null
+          id: string
+          locks_at: string
+          resolved_at: string | null
+          status: string
+          title: string
+          video_id: string | null
+        }
+        Insert: {
+          created_at?: string
+          creator_id?: string | null
+          final_views?: number | null
+          id?: string
+          locks_at: string
+          resolved_at?: string | null
+          status?: string
+          title: string
+          video_id?: string | null
+        }
+        Update: {
+          created_at?: string
+          creator_id?: string | null
+          final_views?: number | null
+          id?: string
+          locks_at?: string
+          resolved_at?: string | null
+          status?: string
+          title?: string
+          video_id?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "view_rounds_creator_id_fkey"
             columns: ["creator_id"]
             isOneToOne: false
             referencedRelation: "creators"
@@ -784,11 +1014,18 @@ export type Database = {
         Args: { p_category: string; p_size: number; p_title: string }
         Returns: string
       }
+      daily_member_id: { Args: { p_day: string }; Returns: string }
       fulfill_post: {
         Args: { p_post: string; p_video_id: string }
         Returns: Json
       }
+      guess_member: { Args: { p_member: string }; Returns: Json }
       is_admin: { Args: never; Returns: boolean }
+      member_feedback: {
+        Args: { p_answer: string; p_guess: string }
+        Returns: Json
+      }
+      my_member_game: { Args: never; Returns: Json }
       next_matchup: {
         Args: { p_category?: string }
         Returns: {
@@ -816,6 +1053,12 @@ export type Database = {
           isSetofReturn: true
         }
       }
+      puzzle_day: { Args: never; Returns: string }
+      redeem_reward: { Args: { p_reward: string }; Returns: Json }
+      resolve_view_round: {
+        Args: { p_final_views: number; p_round: string; p_video_id?: string }
+        Returns: Json
+      }
       set_featured: {
         Args: { p_post: string; p_week: string }
         Returns: undefined
@@ -824,6 +1067,17 @@ export type Database = {
         Args: { p_post: string; p_status: string }
         Returns: undefined
       }
+      view_round_results: {
+        Args: { p_round: string }
+        Returns: {
+          guess: number
+          off_by: number
+          points: number
+          rank: number
+          username: string
+        }[]
+      }
+      view_round_stats: { Args: { p_round: string }; Returns: Json }
     }
     Enums: {
       [_ in never]: never
