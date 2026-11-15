@@ -309,15 +309,6 @@ export function CallFeed() {
               </button>
             ))}
           </div>
-          <div className="mt-5 hidden border-t border-line pt-4 text-sm text-muted lg:block">
-            <p className="font-bold text-fg">How The Call works</p>
-            <ol className="mt-2 list-decimal space-y-1.5 pl-4">
-              <li>Post a request or a yes/no poll.</li>
-              <li>Upvote what you want made.</li>
-              <li>Every week, top picks get answered in a FaZe upload.</li>
-              <li>If it gets made, the author gets +500 points and every backer gets +50.</li>
-            </ol>
-          </div>
         </div>
       </aside>
     </div>
