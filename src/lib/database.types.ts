@@ -552,6 +552,7 @@ export type Database = {
       }
       posts: {
         Row: {
+          author_fan_type: string | null
           author_id: string | null
           body: string
           created_at: string
@@ -572,6 +573,7 @@ export type Database = {
           yes_count: number
         }
         Insert: {
+          author_fan_type?: string | null
           author_id?: string | null
           body: string
           created_at?: string
@@ -592,6 +594,7 @@ export type Database = {
           yes_count?: number
         }
         Update: {
+          author_fan_type?: string | null
           author_id?: string | null
           body?: string
           created_at?: string
@@ -717,6 +720,7 @@ export type Database = {
       posts_feed: {
         Row: {
           author_avatar: string | null
+          author_fan_type: string | null
           author_id: string | null
           author_username: string | null
           body: string | null
