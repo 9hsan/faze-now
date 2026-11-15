@@ -15,6 +15,9 @@ type AuthState = {
   profile: Profile | null;
   isGuest: boolean;
   error: string | null;
+  /** Unread notifications (seen / fulfilled / backed requests). */
+  unread: number;
+  markAllRead: () => Promise<void>;
   refreshProfile: () => Promise<void>;
   /** Keep a guest's points by attaching Discord; falls back to plain sign-in if that Discord account already exists. */
   connectDiscord: (next?: string) => Promise<void>;
@@ -96,6 +99,47 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     if (user) await loadProfile(user.id);
   }, [user, loadProfile]);
 
+  // Unread notifications: initial count, then live inserts (points usually changed too)
+  const [unread, setUnread] = useState(0);
+  const userId = user?.id;
+  useEffect(() => {
+    if (!userId) return;
+    let stale = false;
+    supabase
+      .from("notifications")
+      .select("id", { count: "exact", head: true })
+      .eq("user_id", userId)
+      .is("read_at", null)
+      .then(({ count }) => {
+        if (!stale) setUnread(count ?? 0);
+      });
+    const channel = supabase
+      .channel(`inbox-${userId}`)
+      .on(
+        "postgres_changes",
+        { event: "INSERT", schema: "public", table: "notifications", filter: `user_id=eq.${userId}` },
+        () => {
+          setUnread((n) => n + 1);
+          loadProfile(userId);
+        },
+      )
+      .subscribe();
+    return () => {
+      stale = true;
+      supabase.removeChannel(channel);
+    };
+  }, [supabase, userId, loadProfile]);
+
+  const markAllRead = useCallback(async () => {
+    if (!userId) return;
+    setUnread(0);
+    await supabase
+      .from("notifications")
+      .update({ read_at: new Date().toISOString() })
+      .eq("user_id", userId)
+      .is("read_at", null);
+  }, [supabase, userId]);
+
   const connectDiscord = useCallback(
     async (next = "/me") => {
       setError(null);
@@ -142,11 +186,13 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       profile,
       isGuest: user?.is_anonymous ?? true,
       error,
+      unread,
+      markAllRead,
       refreshProfile,
       connectDiscord,
       signOut,
     }),
-    [ready, user, profile, error, refreshProfile, connectDiscord, signOut],
+    [ready, user, profile, error, unread, markAllRead, refreshProfile, connectDiscord, signOut],
   );
 
   return <AuthContext value={value}>{children}</AuthContext>;

@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
+import Link from "next/link";
 import { useSearchParams } from "next/navigation";
 import { useAuth } from "@/components/auth-provider";
 import { getSupabase } from "@/lib/supabase/client";
@@ -20,21 +21,49 @@ const REASON_LABEL: Record<string, string> = {
 };
 
 type LedgerRow = Pick<Tables<"points_ledger">, "id" | "amount" | "reason" | "created_at">;
+type Note = Pick<Tables<"notifications">, "id" | "kind" | "body" | "read_at" | "created_at" | "post_id">;
 
 export function ProfileView() {
-  const { ready, profile, isGuest, error, connectDiscord, signOut } = useAuth();
+  const { ready, profile, isGuest, error, unread, markAllRead, connectDiscord, signOut } = useAuth();
   const authError = useSearchParams().get("auth_error");
   const [history, setHistory] = useState<LedgerRow[] | null>(null);
+  const [notes, setNotes] = useState<Note[] | null>(null);
+  const profileId = profile?.id;
+  const points = profile?.points;
 
   useEffect(() => {
-    if (!profile) return;
-    getSupabase()
-      .from("points_ledger")
-      .select("id, amount, reason, created_at")
-      .order("created_at", { ascending: false })
-      .limit(25)
-      .then(({ data }) => setHistory(data ?? []));
-  }, [profile]);
+    if (!profileId) return;
+    let stale = false;
+    const supabase = getSupabase();
+    Promise.all([
+      supabase
+        .from("points_ledger")
+        .select("id, amount, reason, created_at")
+        .order("created_at", { ascending: false })
+        .limit(25),
+      supabase
+        .from("notifications")
+        .select("id, kind, body, read_at, created_at, post_id")
+        .order("created_at", { ascending: false })
+        .limit(20),
+    ]).then(([{ data: h }, { data: n }]) => {
+      if (stale) return;
+      setHistory(h ?? []);
+      setNotes(n ?? []);
+    });
+    return () => {
+      stale = true;
+    };
+    // points changes (new rewards) refresh both lists
+  }, [profileId, points, unread]);
+
+  // Seeing the inbox counts as reading it
+  useEffect(() => {
+    if (notes?.some((n) => !n.read_at) && unread > 0) {
+      const t = setTimeout(markAllRead, 1500);
+      return () => clearTimeout(t);
+    }
+  }, [notes, unread, markAllRead]);
 
   if (!ready || !profile) {
     return <div className="h-40 animate-pulse rounded-xl bg-surface" />;
@@ -94,6 +123,39 @@ export function ProfileView() {
         )}
       </section>
 
+      <div className="grid gap-6">
+      <section id="inbox" className="rounded-xl border border-line bg-surface p-6">
+        <h2 className="display text-2xl">Inbox</h2>
+        {notes === null ? (
+          <div className="mt-4 h-16 animate-pulse rounded-lg bg-surface-2" />
+        ) : notes.length === 0 ? (
+          <p className="mt-3 text-muted">
+            When a creator sees your request, or something you backed gets made, you&apos;ll hear about it
+            here.
+          </p>
+        ) : (
+          <ul className="mt-3 divide-y divide-line">
+            {notes.map((n) => (
+              <li key={n.id} className="flex items-start gap-3 py-3">
+                <span
+                  className={`mt-1.5 h-2 w-2 shrink-0 rounded-full ${n.read_at ? "bg-transparent" : "bg-faze"}`}
+                  aria-hidden
+                />
+                <div className="min-w-0 flex-1">
+                  <p className={n.kind.startsWith("fulfilled") ? "font-bold text-emerald-300" : ""}>{n.body}</p>
+                  <p className="text-xs text-muted">{new Date(n.created_at).toLocaleString()}</p>
+                </div>
+                {n.post_id && (
+                  <Link href="/call" className="shrink-0 text-xs text-muted hover:text-fg">
+                    View →
+                  </Link>
+                )}
+              </li>
+            ))}
+          </ul>
+        )}
+      </section>
+
       <section className="rounded-xl border border-line bg-surface p-6">
         <h2 className="display text-2xl">Points history</h2>
         {history === null ? (
@@ -119,6 +181,7 @@ export function ProfileView() {
           </ul>
         )}
       </section>
+      </div>
     </div>
   );
 }

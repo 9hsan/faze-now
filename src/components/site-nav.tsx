@@ -14,12 +14,18 @@ function Wordmark() {
 }
 
 export function PointsChip() {
-  const { ready, profile, isGuest } = useAuth();
+  const { ready, profile, isGuest, unread } = useAuth();
   return (
     <Link
       href="/me"
-      className="flex items-center gap-2 rounded-full border border-line bg-surface px-3 py-1.5 text-sm font-semibold"
+      className="relative flex items-center gap-2 rounded-full border border-line bg-surface px-3 py-1.5 text-sm font-semibold"
+      aria-label={unread ? `${unread} new notifications` : undefined}
     >
+      {unread > 0 && (
+        <span className="absolute -right-1 -top-1 flex h-5 min-w-5 items-center justify-center rounded-full bg-faze px-1 text-[11px] font-bold text-white">
+          {unread > 9 ? "9+" : unread}
+        </span>
+      )}
       <span className="h-2 w-2 rounded-full bg-gold" aria-hidden />
       {ready && profile ? (
         <span className="tabular-nums">{profile.points.toLocaleString()} pts</span>
@@ -64,6 +70,7 @@ export function SiteHeader() {
 /** Thumb-reachable tabs on phones (most demo traffic comes from QR scans). */
 export function BottomNav() {
   const pathname = usePathname();
+  const { unread } = useAuth();
   return (
     <nav
       className="fixed inset-x-0 bottom-0 z-40 border-t border-line bg-bg/95 backdrop-blur md:hidden"
@@ -85,7 +92,12 @@ export function BottomNav() {
                   className={`h-1 w-6 rounded-full ${active ? "bg-faze" : "bg-transparent"}`}
                   aria-hidden
                 />
-                {n.short}
+                <span className="relative">
+                  {n.short}
+                  {n.href === "/me" && unread > 0 && (
+                    <span className="absolute -right-2.5 -top-0.5 h-2 w-2 rounded-full bg-faze" aria-label="new notifications" />
+                  )}
+                </span>
               </Link>
             </li>
           );
