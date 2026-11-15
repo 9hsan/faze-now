@@ -18,6 +18,9 @@ const REASON_LABEL: Record<string, string> = {
   request_fulfilled: "Your idea got made",
   scout: "Scout: backed the champion early",
   bracket_champion: "Bracket champion",
+  view_guess: "Top 10 in Guess the Views",
+  daily_member: "Solved Guess the Member",
+  redeem: "Redeemed a reward",
 };
 
 type LedgerRow = Pick<Tables<"points_ledger">, "id" | "amount" | "reason" | "created_at">;

@@ -46,7 +46,7 @@ export function SiteHeader() {
       <div className="mx-auto flex h-14 max-w-6xl items-center justify-between gap-4 px-4">
         <Wordmark />
         <nav className="hidden items-center gap-1 md:flex" aria-label="Main">
-          {NAV.filter((n) => n.href !== "/").map((n) => (
+          {NAV.filter((n) => n.href !== "/" && n.href !== "/me").map((n) => (
             <Link
               key={n.href}
               href={n.href}
@@ -78,7 +78,7 @@ export function BottomNav() {
       aria-label="Main"
     >
       <ul className="mx-auto grid max-w-md grid-cols-5">
-        {NAV.map((n) => {
+        {NAV.filter((n) => n.mobile).map((n) => {
           const active = isActive(pathname, n.href);
           return (
             <li key={n.href}>
