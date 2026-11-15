@@ -131,7 +131,9 @@ async function processFolder(folder) {
       const src = path.join(folder, e.file);
       const p = await probe(src);
       const start = Number(e.start) || 0;
-      const length = Math.min(MAX_SECONDS, Math.max(1, p.duration - start));
+      // Optional "end" lets one long video (a compilation) yield many clips
+      const end = Number(e.end) > start ? Math.min(Number(e.end), p.duration) : p.duration;
+      const length = Math.min(MAX_SECONDS, Math.max(1, end - start));
       const sourceVertical = p.height >= p.width;
       const vertical = sourceVertical || !!e.crop;
 
@@ -141,7 +143,7 @@ async function processFolder(folder) {
           ? "crop=ih*9/16:ih,scale=720:1280,setsar=1"
           : "scale=-2:720,setsar=1";
 
-      const hash = createHash("sha1").update(`${e.file}|${start}|${e.crop}`).digest("hex").slice(0, 8);
+      const hash = createHash("sha1").update(`${e.file}|${start}|${e.end ?? ""}|${e.crop}`).digest("hex").slice(0, 8);
       const name = `${slugify(e.title)}-${hash}`;
       const outVideo = path.join(outDir, `${name}.mp4`);
       const outThumb = path.join(outDir, `${name}.jpg`);
