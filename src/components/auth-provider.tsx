@@ -26,6 +26,16 @@ type AuthState = {
 
 const AuthContext = createContext<AuthState | null>(null);
 
+/**
+ * One guest sign-in per page load, even if the boot effect runs twice (React dev StrictMode runs
+ * effects twice; without this, each visit would create two anonymous accounts).
+ */
+let guestSignIn: ReturnType<ReturnType<typeof getSupabase>["auth"]["signInAnonymously"]> | null = null;
+function signInGuestOnce() {
+  guestSignIn ??= getSupabase().auth.signInAnonymously();
+  return guestSignIn;
+}
+
 export function AuthProvider({ children }: { children: ReactNode }) {
   const supabase = getSupabase();
   const [user, setUser] = useState<User | null>(null);
@@ -58,7 +68,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
 
       if (!sessionUser) {
         // Silent guest account: QR visitors can vote with zero friction.
-        const { data: anon, error: anonError } = await supabase.auth.signInAnonymously();
+        const { data: anon, error: anonError } = await signInGuestOnce();
         if (anonError) {
           if (!cancelled) {
             setError(anonError.message);
@@ -171,7 +181,8 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     await supabase.auth.signOut();
     // Drop straight back into a fresh guest session
     setReady(false);
-    const { data } = await supabase.auth.signInAnonymously();
+    guestSignIn = null;
+    const { data } = await signInGuestOnce();
     if (data.user) {
       setUser(data.user);
       await loadProfile(data.user.id);

@@ -68,21 +68,39 @@ export function CreatorDashboard() {
         <h1 className="display mt-2 text-5xl md:text-6xl">{creator.name}</h1>
       </header>
 
-      {summary && (
+      {(summary || isAdmin) && (
         <section className="rounded-xl border border-faze/40 bg-faze/5 p-5">
-          <p className="eyebrow">This week from your fans</p>
-          <p className="mt-2 text-lg leading-relaxed">{summary.summary}</p>
-          <p className="mt-2 text-xs text-muted">
-            Week of {new Date(`${summary.week_of}T00:00:00Z`).toLocaleDateString(undefined, { month: "long", day: "numeric", timeZone: "UTC" })} ·
-            summarized from {stats.requests} posts
-          </p>
+          <div className="flex flex-wrap items-start justify-between gap-3">
+            <p className="eyebrow">This week from your fans</p>
+            {summary && (
+              <span
+                className={`rounded-full border px-2.5 py-0.5 text-[11px] font-bold uppercase tracking-wider ${
+                  summary.model ? "border-new/50 text-new" : "border-line text-muted"
+                }`}
+              >
+                {summary.model ? `AI brief · ${summary.model}` : "Sample brief"}
+              </span>
+            )}
+          </div>
+          {summary ? (
+            <p className="mt-2 text-lg leading-relaxed">{summary.summary}</p>
+          ) : (
+            <p className="mt-2 text-muted">No brief yet this week.</p>
+          )}
+          {summary && (
+            <p className="mt-2 text-xs text-muted">
+              Week of {new Date(`${summary.week_of}T00:00:00Z`).toLocaleDateString(undefined, { month: "long", day: "numeric", timeZone: "UTC" })} ·
+              {summary.model ? ` written by AI from ${stats.requests} posts` : ` summarized from ${stats.requests} posts`}
+            </p>
+          )}
+          {isAdmin && <RegenerateBrief creatorId={creator.id} posts={stats.requests} onDone={refresh} />}
         </section>
       )}
 
       <div className="grid grid-cols-2 gap-3 md:grid-cols-4">
         <StatTile label="Ideas" value={stats.requests} note="requests and polls" />
         <StatTile label="Fan votes" value={compactNum(stats.support)} />
-        <StatTile label="Themes" value={stats.themes.length} note="grouped by topic" />
+        <StatTile label="Themes" value={stats.themes.length} note={summary?.model ? "grouped by AI" : "grouped by topic"} />
         <StatTile label="From new fans" value={pct(share.new)} note="share of support" />
       </div>
 
@@ -162,6 +180,44 @@ export function CreatorDashboard() {
           }))}
         />
       </section>
+    </div>
+  );
+}
+
+function RegenerateBrief({ creatorId, posts, onDone }: { creatorId: string; posts: number; onDone: () => void }) {
+  const [busy, setBusy] = useState(false);
+  const [msg, setMsg] = useState<string | null>(null);
+
+  async function run() {
+    setBusy(true);
+    setMsg(null);
+    try {
+      const res = await fetch(`/api/brief/${creatorId}`, { method: "POST" });
+      const body = (await res.json().catch(() => ({}))) as { error?: string; themes?: number };
+      if (!res.ok) {
+        setMsg(body.error ?? `Failed (${res.status})`);
+      } else {
+        setMsg(`Done: ${body.themes} themes from ${posts} posts.`);
+        onDone();
+      }
+    } catch {
+      setMsg("Network error. Try again.");
+    } finally {
+      setBusy(false);
+    }
+  }
+
+  return (
+    <div className="mt-4 flex flex-wrap items-center gap-3 border-t border-dashed border-faze/40 pt-3">
+      <button
+        type="button"
+        disabled={busy}
+        onClick={run}
+        className="rounded-md bg-fg px-3 py-1.5 text-sm font-bold text-bg disabled:opacity-60"
+      >
+        {busy ? `Reading ${posts} posts…` : "✦ Regenerate with AI"}
+      </button>
+      <span className="text-xs text-muted">{msg ?? "Regroups every request into themes and rewrites this brief."}</span>
     </div>
   );
 }

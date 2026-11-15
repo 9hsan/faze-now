@@ -325,18 +325,21 @@ export type Database = {
         Row: {
           creator_id: string
           generated_at: string
+          model: string | null
           summary: string
           week_of: string
         }
         Insert: {
           creator_id: string
           generated_at?: string
+          model?: string | null
           summary: string
           week_of: string
         }
         Update: {
           creator_id?: string
           generated_at?: string
+          model?: string | null
           summary?: string
           week_of?: string
         }
@@ -1000,6 +1003,15 @@ export type Database = {
     }
     Functions: {
       advance_bracket: { Args: { p_bracket: string }; Returns: Json }
+      apply_creator_brief: {
+        Args: {
+          p_creator: string
+          p_model: string
+          p_summary: string
+          p_themes: Json
+        }
+        Returns: Json
+      }
       cast_clip_vote: {
         Args: {
           p_clip_a: string
