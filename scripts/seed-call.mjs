@@ -64,6 +64,9 @@ const rows = POSTS.map(([creator, type, body, author, upvotes, hoursAgo, extra =
   yes_count: extra.yes ?? 0,
   no_count: extra.no ?? 0,
   featured_week: extra.featured ? week : null,
+  // Re-running resets a demo fulfil, so the live "Fulfill" moment can be recorded again
+  fulfilled_video_id: null,
+  fulfilled_at: null,
   created_at: new Date(Date.now() - hoursAgo * 3600_000).toISOString(),
 }));
 
