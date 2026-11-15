@@ -4,6 +4,7 @@ import { Suspense } from "react";
 import "./globals.css";
 import { AuthProvider } from "@/components/auth-provider";
 import { BottomNav, SiteHeader } from "@/components/site-nav";
+import { FanTypePrompt } from "@/components/fan-type-prompt";
 
 const anton = Anton({
   variable: "--font-anton",
@@ -40,6 +41,7 @@ export default function RootLayout({ children }: LayoutProps<"/">) {
           <Suspense fallback={null}>
             <BottomNav />
           </Suspense>
+          <FanTypePrompt />
         </AuthProvider>
       </body>
     </html>
