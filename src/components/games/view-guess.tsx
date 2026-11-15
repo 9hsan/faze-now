@@ -154,7 +154,9 @@ export function ViewGuess() {
               ? `Final: ${round.final_views?.toLocaleString()} views after 7 days`
               : "How many views will it have 7 days after it drops?"}
           </p>
-          <p className="mt-1 text-xs text-muted">{count.toLocaleString()} fans guessed</p>
+          <p className="mt-1 text-xs text-muted">
+            {count === 0 ? "No guesses yet. Be the first." : `${count.toLocaleString()} ${count === 1 ? "fan" : "fans"} guessed`}
+          </p>
         </div>
       </div>
 
@@ -224,6 +226,21 @@ export function ViewGuess() {
             {open ? `⏱ ${countdown}` : "Closed"}
           </span>
         </div>
+      )}
+
+      {round.status === "open" && (
+        <ol className="mt-auto grid gap-2 pt-5 text-sm text-muted">
+          {[
+            "Lock in one guess before the video drops.",
+            "Seven days after it drops, we check the real view count.",
+            "The 10 closest guesses win points. Ties go to whoever guessed first.",
+          ].map((step, i) => (
+            <li key={i} className="flex gap-3">
+              <span className="display w-5 shrink-0 text-lg text-faze">{i + 1}</span>
+              {step}
+            </li>
+          ))}
+        </ol>
       )}
 
       {profile?.is_admin && round.status === "open" && <ResolveForm round={round} onDone={() => { setNonce((n) => n + 1); refreshProfile(); }} />}

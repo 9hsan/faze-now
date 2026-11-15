@@ -26,7 +26,11 @@ export function Ticker() {
       if (rounds?.[0]) {
         const { data: s } = await supabase.rpc("view_round_stats", { p_round: rounds[0].id });
         const n = (s as { guesses: number } | null)?.guesses ?? 0;
-        out.push(`GUESS THE VIEWS: ${n.toLocaleString()} fans called the next upload`);
+        out.push(
+          n === 0
+            ? "GUESS THE VIEWS: be the first to call the next upload"
+            : `GUESS THE VIEWS: ${n.toLocaleString()} ${n === 1 ? "fan has" : "fans have"} called the next upload`,
+        );
       }
       setItems(out);
     });

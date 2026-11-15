@@ -4,6 +4,7 @@ import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { NAV, isActive } from "@/lib/nav";
 import { useAuth } from "@/components/auth-provider";
+import { useHydrated } from "@/lib/use-hydrated";
 
 function Wordmark() {
   return (
@@ -14,7 +15,13 @@ function Wordmark() {
 }
 
 export function PointsChip() {
-  const { ready, profile, isGuest, unread } = useAuth();
+  const auth = useAuth();
+  const hydrated = useHydrated();
+  // Until hydration finishes, render exactly what the server did
+  const ready = hydrated && auth.ready;
+  const profile = hydrated ? auth.profile : null;
+  const isGuest = auth.isGuest;
+  const unread = hydrated ? auth.unread : 0;
   return (
     <Link
       href="/me"
@@ -70,7 +77,9 @@ export function SiteHeader() {
 /** Thumb-reachable tabs on phones (most demo traffic comes from QR scans). */
 export function BottomNav() {
   const pathname = usePathname();
-  const { unread } = useAuth();
+  const auth = useAuth();
+  const hydrated = useHydrated();
+  const unread = hydrated ? auth.unread : 0;
   return (
     <nav
       className="fixed inset-x-0 bottom-0 z-40 border-t border-line bg-bg/95 backdrop-blur md:hidden"

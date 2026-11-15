@@ -32,8 +32,11 @@ export const viewport: Viewport = {
 export default function RootLayout({ children }: LayoutProps<"/">) {
   return (
     <html lang="en" className={`${anton.variable} ${sourceSans.variable} h-full antialiased`}>
-      <body className="flex min-h-full flex-col">
+      {/* Browser extensions inject attributes on <body>; don't flag that as a hydration error */}
+      <body className="flex min-h-full flex-col" suppressHydrationWarning>
         <AuthProvider>
+          {/* Suspense is required (usePathname on dynamic routes). The auth-driven bits inside
+              use useHydrated() so they match the server HTML until hydration finishes. */}
           <Suspense fallback={<div className="h-14 border-b border-line" />}>
             <SiteHeader />
           </Suspense>

@@ -106,9 +106,10 @@ export function Hero() {
       <div className="relative mx-auto flex h-full max-w-6xl flex-col justify-end px-4 pb-14">
         <div key={index} className="max-w-3xl animate-[fadeUp_600ms_ease-out]">
           <p className="eyebrow">{slide.eyebrow}</p>
-          <h1 className="display mt-3 text-[13vw] leading-[0.9] md:text-8xl">{slide.title}</h1>
-          <p className="mt-5 max-w-xl text-lg text-fg/80">{slide.body}</p>
-          <div className="mt-7 flex flex-wrap items-center gap-3">
+          {/* Capped by height too, so short laptop/projector screens don't push it under the header */}
+          <h1 className="display mt-3 text-[min(13vw,9svh)] leading-[0.9] md:text-[min(6rem,10svh)]">{slide.title}</h1>
+          <p className="mt-4 max-w-xl text-base text-fg/80 md:text-lg">{slide.body}</p>
+          <div className="mt-6 flex flex-wrap items-center gap-3">
             <Link
               href={slide.cta.href}
               className="rounded-full bg-faze px-6 py-3 font-bold text-white transition-colors hover:bg-faze-hot"
@@ -120,7 +121,7 @@ export function Hero() {
         </div>
 
         {/* Slide progress */}
-        <div className="mt-10 grid grid-cols-3 gap-3" role="tablist" aria-label="Featured">
+        <div className="mt-[min(2.5rem,4svh)] grid grid-cols-3 gap-3" role="tablist" aria-label="Featured">
           {SLIDES.map((s, i) => (
             <button
               key={i}
