@@ -11,6 +11,9 @@
   --faze: #e4002b;
   --faze-hot: #ff1f45;
   --gold: #f5c542;
+  /* Chart series (validated pair on the dark surface: CVD ΔE 27.6, all checks pass) */
+  --series-returning: #e4002b;
+  --series-new: #3987e5;
 }
 
 @theme inline {
@@ -23,6 +26,8 @@
   --color-faze: var(--faze);
   --color-faze-hot: var(--faze-hot);
   --color-gold: var(--gold);
+  --color-returning: var(--series-returning);
+  --color-new: var(--series-new);
   --font-sans: var(--font-source), system-ui, sans-serif;
   --font-display: var(--font-anton), Impact, sans-serif;
 }
