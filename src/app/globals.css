@@ -1,13 +1,13 @@
 @import "tailwindcss";
 
-/* Brand tokens. Swap values here once the FaZe Brand Toolkit is in. */
+/* Brand tokens from the FaZe Clan Brand Guidelines: Red Alert #E4002B, Black #111111, White. */
 :root {
-  --bg: #0b0b0c;
-  --surface: #151517;
-  --surface-2: #1d1d20;
-  --line: #2a2a2e;
-  --fg: #f5f5f4;
-  --muted: #a1a1aa;
+  --bg: #111111;
+  --surface: #1a1a1a;
+  --surface-2: #232323;
+  --line: #2e2e2e;
+  --fg: #ffffff;
+  --muted: #a3a3a3;
   --faze: #e4002b;
   --faze-hot: #ff1f45;
   --gold: #f5c542;
@@ -37,7 +37,9 @@ html {
 }
 
 body {
-  background: var(--bg);
+  /* FaZe tiger camo (grey variant, the brand's choice for backgrounds), re-toned for dark */
+  background: var(--bg) url("/brand/camo-dark.webp") repeat;
+  background-size: 640px auto;
   color: var(--fg);
   font-family: var(--font-source), system-ui, sans-serif;
   -webkit-tap-highlight-color: transparent;

@@ -101,7 +101,7 @@ function BenefitCard({ title, body, href, children }: { title: string; body: str
 export function Bands() {
   const thumbs = useTopThumbs(6);
   const rows = [
-    { href: "/call", title: "The Call", sub: "Fans pitch it. FaZe hears it.", art: "from-faze/70 via-rose-950 to-black", word: "PITCH" },
+    { href: "/call", title: "The Call", sub: "Fans pitch it. FaZe hears it.", art: "from-black via-black/70 to-black/20", word: "PITCH", camo: true },
     { href: "/court", title: "Clip Court", sub: "Every clip gets seen.", art: "from-black via-black/60 to-transparent", word: "JUDGE", strip: true },
     { href: "/creators", title: "Creator Insights", sub: "What fans actually want, by creator.", art: "from-sky-900 via-slate-950 to-black", word: "INSIGHTS" },
     { href: "/rewards", title: "Rewards", sub: "Merch, early drops, moments in FaZe videos.", art: "from-amber-700/70 via-stone-950 to-black", word: "EARN" },
@@ -114,6 +114,13 @@ export function Bands() {
           href={r.href}
           className="group relative flex h-36 items-center overflow-hidden border-b border-line md:h-44"
         >
+          {"camo" in r && r.camo && (
+            // FaZe's original red/black tiger camo
+            <div
+              className="absolute inset-0 bg-[url('/brand/camo-red.webp')] bg-[length:520px_auto] bg-repeat opacity-90 transition-opacity group-hover:opacity-100"
+              aria-hidden
+            />
+          )}
           {r.strip && thumbs.length > 0 && (
             <div className="absolute inset-0 flex opacity-60 transition-opacity group-hover:opacity-80" aria-hidden>
               {thumbs.map((t, i) => (
@@ -149,6 +156,9 @@ export function ClosingCta() {
     <section className="bleed relative overflow-hidden py-24 text-center">
       <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_center,rgba(228,0,43,0.25),transparent_65%)]" aria-hidden />
       <div className="relative mx-auto max-w-3xl px-4">
+        {/* Logo 1 (double stroke) at full size, with the guideline's clear space around it */}
+        {/* eslint-disable-next-line @next/next/no-img-element */}
+        <img src="/brand/faze-mark.png" alt="FaZe Clan" width={144} height={97} className="mx-auto mb-10 h-auto w-36" />
         <p className="eyebrow">Kingmakers since 2010</p>
         <h2 className="display mt-3 text-7xl md:text-9xl">Your turn.</h2>
         <p className="mx-auto mt-4 max-w-md text-muted">
@@ -171,8 +181,10 @@ export function SiteFooter() {
   return (
     <footer className="bleed border-t border-line py-8">
       <div className="mx-auto flex max-w-6xl flex-wrap items-center justify-between gap-3 px-4 text-sm text-muted">
-        <p className="display text-xl text-fg">
-          <span className="text-faze">FAZE</span> NOW
+        <p className="flex items-center gap-2.5 text-fg">
+          {/* eslint-disable-next-line @next/next/no-img-element */}
+          <img src="/brand/faze-mark-1c.png" alt="" width={40} height={26} className="h-[26px] w-10" />
+          <span className="display text-xl">NOW</span>
         </p>
         <p>A HackUTA 2026 prototype for the FaZe Clan challenge.</p>
       </div>

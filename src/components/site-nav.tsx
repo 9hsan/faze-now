@@ -8,8 +8,11 @@ import { useHydrated } from "@/lib/use-hydrated";
 
 function Wordmark() {
   return (
-    <Link href="/" className="display text-2xl leading-none" aria-label="Faze Now home">
-      <span className="text-faze">FAZE</span> <span>NOW</span>
+    <Link href="/" className="flex items-center gap-2.5" aria-label="Faze Now home">
+      {/* Brand mark: 1-color version under 60px, never below the 40px minimum */}
+      {/* eslint-disable-next-line @next/next/no-img-element */}
+      <img src="/brand/faze-mark-1c.png" alt="" width={40} height={26} className="h-[26px] w-10" />
+      <span className="display text-2xl leading-none">NOW</span>
     </Link>
   );
 }
